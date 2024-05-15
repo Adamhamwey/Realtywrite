@@ -17,5 +17,7 @@ priceScene.enter((ctx) => {
   ctx.reply("Please enter your price.");
 });
 priceScene.on(message("text"), (ctx) => {
+  ctx.session.price = ctx.message.text;
+  ctx.scene.session.price = ctx.message.text;
   ctx.scene.enter(ScenesEnum.LOCATION_SCENE);
 });

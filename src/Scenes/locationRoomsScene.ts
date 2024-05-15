@@ -16,6 +16,8 @@ locationScene.command(CommandEnum.EXIT, (ctx) => {
 locationScene.enter((ctx) => {
   ctx.reply("Please enter your location.");
 });
-locationScene.on(message("text"), (ctx) =>
-  ctx.scene.enter(ScenesEnum.BED_ROOMS_SCENE)
-);
+locationScene.on(message("text"), (ctx) => {
+  ctx.session.location = ctx.message.text;
+  ctx.scene.session.location = ctx.message.text;
+  ctx.scene.enter(ScenesEnum.BED_ROOMS_SCENE);
+});

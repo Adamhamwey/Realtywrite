@@ -22,5 +22,7 @@ statusScene.enter((ctx) => {
   ctx.reply("Choose status", menuOptions);
 });
 statusScene.on(message("text"), (ctx) => {
+  ctx.session.status = ctx.message.text;
+  ctx.scene.session.status = ctx.message.text;
   ctx.scene.enter(ScenesEnum.PRICE_SCENE);
 });

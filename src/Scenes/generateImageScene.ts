@@ -2,8 +2,9 @@ import { Scenes } from "telegraf";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum } from "../const";
 import axios from "axios";
-import { createReadStream, unlinkSync } from "fs";
+import { createReadStream, unlinkSync, writeFileSync } from "fs";
 import Jimp from "jimp";
+import { createCanvas, loadImage } from "canvas";
 
 // Status scene
 export const generateImageScene = new Scenes.BaseScene<ImageCreatorContext>(
@@ -25,7 +26,15 @@ generateImageScene.command(CommandEnum.TRY_AGAIN, (ctx) => {
 generateImageScene.enter(async (ctx) => {
   try {
     // Get the file link
-    const fileLink = ctx.session.fileLink;
+    const {
+      fileLink,
+      status,
+      price,
+      location,
+      noOfBedRooms,
+      noOfBathRooms,
+      area,
+    } = ctx.session;
 
     // Download the image
     const response = await axios({
@@ -36,15 +45,54 @@ generateImageScene.enter(async (ctx) => {
     // Load the image with Jimp
     const image = await Jimp.read(response.data);
 
-    // Create a new font
-    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+    // Create a canvas to draw the text
+    const canvas = createCanvas(image.bitmap.width, image.bitmap.height);
+    const ctxCanvas = canvas.getContext("2d");
 
-    // Print "Hello" on the image
-    image.print(font, 10, 10, "Hello");
+    // Draw the image onto the canvas
+    const background = await loadImage(response.data);
+    ctxCanvas.drawImage(
+      background,
+      0,
+      0,
+      image.bitmap.width,
+      image.bitmap.height
+    );
 
-    // Save the image
+    // Set styles for the text
+    ctxCanvas.font = "bold 50px Arial";
+    ctxCanvas.fillStyle = "#FFFFFF";
+    ctxCanvas.textAlign = "left";
+
+    // Draw text onto the canvas
+    ctxCanvas.fillText("The Real Estate", 30, 70);
+    ctxCanvas.fillText("Super App", 30, 130);
+
+    ctxCanvas.font = "bold 60px Arial";
+    ctxCanvas.fillStyle = "#00FF00";
+    ctxCanvas.fillText(status.toUpperCase(), 30, 200);
+
+    ctxCanvas.font = "bold 80px Arial";
+    ctxCanvas.fillStyle = "#FFFFFF";
+    ctxCanvas.fillText(price, 30, 300);
+
+    ctxCanvas.font = "bold 60px Arial";
+    ctxCanvas.fillText(location, 30, 380);
+
+    ctxCanvas.font = "bold 30px Arial";
+    ctxCanvas.fillText(
+      `${noOfBedRooms} beds | ${noOfBathRooms} baths | ${area} sqft`,
+      30,
+      440
+    );
+
+    ctxCanvas.fillText(location, 30, 480);
+
     const outputPath = "./output.jpg";
-    await image.writeAsync(outputPath);
+
+    // Merge the canvas and the image
+    const buffer = canvas.toBuffer("image/jpeg");
+    writeFileSync(outputPath, buffer);
 
     // Send the image back to the user
     await ctx.replyWithPhoto({ source: createReadStream(outputPath) });
