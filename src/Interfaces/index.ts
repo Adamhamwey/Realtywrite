@@ -61,3 +61,13 @@ export interface ImageCreatorContext extends Context {
     ImageCreatorSceneSession
   >;
 }
+
+export interface PropertyDetails {
+  fileLink: string;
+  price: string;
+  status: string;
+  location: string;
+  noOfBedRooms: string;
+  noOfBathRooms: string;
+  area: string;
+}
