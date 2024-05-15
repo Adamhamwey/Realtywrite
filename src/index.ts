@@ -1,6 +1,6 @@
 import { createReadStream, unlinkSync } from "fs";
 
-import { Telegraf } from "telegraf";
+import { Scenes, session, Telegraf } from "telegraf";
 import axios from "axios";
 import Jimp from "jimp";
 import dotenv from "dotenv";
@@ -9,19 +9,33 @@ import { BOT_TOKEN } from "./const";
 
 dotenv.config();
 
-const bot = new Telegraf(BOT_TOKEN);
+// Handler factories
+const { enter, leave } = Scenes.Stage;
 
-bot.start(async (ctx) => {
-  await ctx.reply(
-    `Hello ${ctx.message.from.first_name}. Use /create command and follow the instructions to create real estate listing images.`
+// Greeter scene
+const startScene = new Scenes.BaseScene<Scenes.SceneContext>("start");
+startScene.enter((ctx) => {
+  ctx.reply(
+    `Hello ${ctx?.message?.from.first_name}. Use /create command and follow the instructions to create real estate listing images.`
   );
 });
-
-bot.command("create", async (ctx) => {
-  await ctx.reply("Please upload your iamge.");
+startScene.command("create", (ctx) => {
+  ctx.scene.enter("create");
 });
+startScene.on("message", (ctx) =>
+  ctx.reply(
+    "Please use /create command and follow the instructions to create real estate listing images."
+  )
+);
 
-bot.on("photo", async (ctx) => {
+// Echo scene
+const createScene = new Scenes.BaseScene<Scenes.SceneContext>("create");
+createScene.enter((ctx) => ctx.reply("Please upload your iamge."));
+createScene.leave((ctx) => ctx.reply("exiting echo scene"));
+createScene.command("start", (ctx) => {
+  ctx.scene.enter("start");
+});
+createScene.on("photo", async (ctx) => {
   // Respond to the user
   ctx.reply("Your image is being preocessing. Please wait... ");
 
@@ -62,10 +76,20 @@ bot.on("photo", async (ctx) => {
     ctx.reply("Sorry, there was an error processing your image.");
   }
 });
+createScene.on("message", (ctx) => ctx.reply("Only image please"));
+
+const bot = new Telegraf<Scenes.SceneContext>(BOT_TOKEN);
 
 bot.command("quit", async (ctx) => {
   // Using context shortcut
   await ctx.leaveChat();
+});
+
+const stage = new Scenes.Stage<Scenes.SceneContext>([startScene, createScene]);
+bot.use(session());
+bot.use(stage.middleware());
+bot.start((ctx) => {
+  ctx.scene.enter("start");
 });
 
 bot.launch();
