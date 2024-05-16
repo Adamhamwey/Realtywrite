@@ -50,14 +50,14 @@ export async function createImage(
   // Draw a rectangle to cover the canvas
   ctxCanvas.fillRect(0, 0, width, height);
 
-  const logo = await loadImage(path.resolve(__dirname, "./../res/logo.png"));
-  ctxCanvas.drawImage(
-    logo,
-    mainStartX,
-    (90 / 1000) * Math.min(width, height),
-    (120 / 1000) * Math.min(width, height),
-    (120 / 1000) * Math.min(width, height)
-  );
+  // const logo = await loadImage(path.resolve(__dirname, "./../res/logo.png"));
+  // ctxCanvas.drawImage(
+  //   logo,
+  //   mainStartX,
+  //   (90 / 1000) * Math.min(width, height),
+  //   (120 / 1000) * Math.min(width, height),
+  //   (120 / 1000) * Math.min(width, height)
+  // );
 
   // Set styles for the text
   ctxCanvas.textAlign = "left";

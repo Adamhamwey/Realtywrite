@@ -22,3 +22,9 @@ export enum CommandEnum {
   EXIT = "exit",
   TRY_AGAIN = "tryAgain",
 }
+
+export enum StatusEnum {
+  FOR_SALE = "For Sale",
+  FOR_RENT = "For Rent",
+  SOLD = "Sold",
+}
