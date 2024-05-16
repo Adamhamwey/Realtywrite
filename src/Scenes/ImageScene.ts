@@ -29,8 +29,8 @@ imageScene.on(message("photo"), async (ctx) => {
   } catch (error) {
     console.error("Error processing image:", error);
     ctx.reply(
-      "Sorry, there was an error processing your image. Please send again."
+      "Sorry, there was an error processing your image. Please try sending it again."
     );
   }
 });
-imageScene.on(message("text"), (ctx) => ctx.reply("Only image please"));
+imageScene.on(message("text"), (ctx) => ctx.reply("Please upload an image only."));

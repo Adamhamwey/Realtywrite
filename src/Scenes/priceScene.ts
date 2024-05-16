@@ -14,7 +14,7 @@ priceScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
 priceScene.enter((ctx) => {
-  ctx.reply("Please enter your price.");
+  ctx.reply("Please enter the price.");
 });
 priceScene.on(message("text"), (ctx) => {
   ctx.session.price = ctx.message.text;

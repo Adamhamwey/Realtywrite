@@ -14,7 +14,7 @@ bathRoomsScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
 bathRoomsScene.enter((ctx) => {
-  ctx.reply("Please enter number of bathrooms in your house.");
+  ctx.reply("Please enter the number of bathrooms in your house.");
 });
 bathRoomsScene.on(message("text"), (ctx) => {
   ctx.session.noOfBathRooms = ctx.message.text;

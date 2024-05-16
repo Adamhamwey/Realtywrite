@@ -14,7 +14,7 @@ areaScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
 areaScene.enter((ctx) => {
-  ctx.reply("Please enter area in sqft of your house.");
+  ctx.reply("Please enter the area in square feet of your house.");
 });
 areaScene.on(message("text"), (ctx) => {
   ctx.session.area = ctx.message.text;

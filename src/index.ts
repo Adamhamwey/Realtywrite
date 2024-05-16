@@ -7,7 +7,7 @@ import { areaScene } from "./Scenes/areaScene";
 import { bathRoomsScene } from "./Scenes/bathRoomsScene";
 import { bedRoomsScene } from "./Scenes/bedRoomsScene";
 import { imageScene } from "./Scenes/ImageScene";
-import { locationScene } from "./Scenes/locationRoomsScene";
+import { locationScene } from "./Scenes/locationScene";
 import { priceScene } from "./Scenes/priceScene";
 import { statusScene } from "./Scenes/statusScene";
 
