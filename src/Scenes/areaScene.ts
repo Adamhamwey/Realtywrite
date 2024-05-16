@@ -2,6 +2,7 @@ import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum } from "../const";
+import { checkUsageCount } from "../payWall";
 
 // Area scene
 export const areaScene = new Scenes.BaseScene<ImageCreatorContext>(
@@ -13,8 +14,21 @@ areaScene.command(CommandEnum.BACK, (ctx) => {
 areaScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
-areaScene.enter((ctx) => {
-  ctx.reply("Please enter the area in square feet of your house.");
+areaScene.start((ctx) => {
+  ctx.scene.enter(ScenesEnum.START_SCENE);
+});
+areaScene.enter(async (ctx) => {
+  const userId = ctx?.from?.id;
+
+  const passCallback = () =>
+    ctx.reply("Please enter the area in square feet of your house.");
+
+  const failCallback = () =>
+    ctx.reply(
+      "You have exceeded the free usage limit. Please pay to continue using this functionality."
+    );
+
+  await checkUsageCount(userId as number, passCallback, failCallback);
 });
 areaScene.on(message("text"), (ctx) => {
   ctx.session.area = ctx.message.text;

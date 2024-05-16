@@ -2,6 +2,7 @@ import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum } from "../const";
+import { checkUsageCount } from "../payWall";
 
 // Bedrooms scene
 export const bedRoomsScene = new Scenes.BaseScene<ImageCreatorContext>(
@@ -13,8 +14,21 @@ bedRoomsScene.command(CommandEnum.BACK, (ctx) => {
 bedRoomsScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
-bedRoomsScene.enter((ctx) => {
-  ctx.reply("Please enter the number of bedrooms in your house.");
+bedRoomsScene.start((ctx) => {
+  ctx.scene.enter(ScenesEnum.START_SCENE);
+});
+bedRoomsScene.enter(async (ctx) => {
+  const userId = ctx?.from?.id;
+
+  const passCallback = () =>
+    ctx.reply("Please enter the number of bedrooms in your house.");
+
+  const failCallback = () =>
+    ctx.reply(
+      "You have exceeded the free usage limit. Please pay to continue using this functionality."
+    );
+
+  await checkUsageCount(userId as number, passCallback, failCallback);
 });
 bedRoomsScene.on(message("text"), (ctx) => {
   ctx.session.noOfBedRooms = ctx.message.text;

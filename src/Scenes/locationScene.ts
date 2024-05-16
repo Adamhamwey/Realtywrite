@@ -2,6 +2,7 @@ import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum } from "../const";
+import { checkUsageCount } from "../payWall";
 
 // Location scene
 export const locationScene = new Scenes.BaseScene<ImageCreatorContext>(
@@ -13,8 +14,21 @@ locationScene.command(CommandEnum.BACK, (ctx) => {
 locationScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
-locationScene.enter((ctx) => {
-  ctx.reply('Please enter your location (e.g., "City" or "Town, State").');
+locationScene.start((ctx) => {
+  ctx.scene.enter(ScenesEnum.START_SCENE);
+});
+locationScene.enter(async (ctx) => {
+  const userId = ctx?.from?.id;
+
+  const passCallback = () =>
+    ctx.reply('Please enter your location (e.g., "City" or "Town, State").');
+
+  const failCallback = () =>
+    ctx.reply(
+      "You have exceeded the free usage limit. Please pay to continue using this functionality."
+    );
+
+  await checkUsageCount(userId as number, passCallback, failCallback);
 });
 locationScene.on(message("text"), (ctx) => {
   ctx.session.location = ctx.message.text;

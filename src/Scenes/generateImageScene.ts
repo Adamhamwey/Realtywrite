@@ -3,6 +3,8 @@ import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum } from "../const";
 import { createReadStream, unlinkSync } from "fs";
 import { createImage, formatCurrency, formatDecimals } from "../utils";
+import { usersCollection } from "../db";
+import { checkUsageCount } from "../payWall";
 
 // Status scene
 export const generateImageScene = new Scenes.BaseScene<ImageCreatorContext>(
@@ -21,49 +23,68 @@ generateImageScene.command(CommandEnum.CREATE, (ctx) => {
 generateImageScene.command(CommandEnum.TRY_AGAIN, (ctx) => {
   ctx.scene.enter(ScenesEnum.GENERATE_IMAGE_SCENE);
 });
+generateImageScene.start((ctx) => {
+  ctx.scene.enter(ScenesEnum.START_SCENE);
+});
 generateImageScene.enter(async (ctx) => {
-  try {
-    // Get the file link
-    const {
-      fileLink,
-      status,
-      price,
-      location,
-      noOfBedRooms,
-      noOfBathRooms,
-      area,
-    } = ctx.session;
+  const userId = ctx?.from?.id;
 
-    const formattedPrice = formatCurrency(Number(price));
-    const formattedAera = formatDecimals(Number(area));
-
-    const outputPath = "./output.jpg";
-    await createImage(
-      {
+  const passCallback = async () => {
+    try {
+      // Get the file link
+      const {
         fileLink,
         status,
-        price: formattedPrice,
+        price,
         location,
         noOfBedRooms,
         noOfBathRooms,
-        area: formattedAera,
-      },
-      outputPath
-    );
+        area,
+      } = ctx.session;
 
-    // Send the image back to the user
-    await ctx.replyWithPhoto({ source: createReadStream(outputPath) });
+      const formattedPrice = formatCurrency(Number(price));
+      const formattedAera = formatDecimals(Number(area));
 
-    // Clean up the saved image file
-    unlinkSync(outputPath);
+      const outputPath = "./output.jpg";
+      await createImage(
+        {
+          fileLink,
+          status,
+          price: formattedPrice,
+          location,
+          noOfBedRooms,
+          noOfBathRooms,
+          area: formattedAera,
+        },
+        outputPath
+      );
 
-    await ctx.reply(`Use /${CommandEnum.CREATE} to create another image.`);
-  } catch (error) {
-    console.error("Error processing image:", error);
+      const userId = ctx?.from?.id;
+
+      // Increment usage count
+      await usersCollection.updateOne({ userId }, { $inc: { usageCount: 1 } });
+
+      // Send the image back to the user
+      await ctx.replyWithPhoto({ source: createReadStream(outputPath) });
+
+      // Clean up the saved image file
+      unlinkSync(outputPath);
+
+      await ctx.reply(`Use /${CommandEnum.CREATE} to create another image.`);
+    } catch (error) {
+      console.error("Error processing image:", error);
+      ctx.reply(
+        `Sorry, there was an error processing your image. Use /${CommandEnum.TRY_AGAIN}.`
+      );
+    }
+  };
+
+  const failCallback = () =>
     ctx.reply(
-      `Sorry, there was an error processing your image. Use /${CommandEnum.TRY_AGAIN}.`
+      "You have exceeded the free usage limit. Please pay to continue using this functionality."
     );
-  }
+
+  await checkUsageCount(userId as number, passCallback, failCallback);
 });
 generateImageScene.on("message", (ctx) => {
   ctx.reply(`Use /${CommandEnum.CREATE} to create another image.`);

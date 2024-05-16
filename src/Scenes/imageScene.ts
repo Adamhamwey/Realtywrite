@@ -2,16 +2,31 @@ import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum } from "../const";
+import { checkUsageCount } from "../payWall";
 
 // Image scene
 export const imageScene = new Scenes.BaseScene<ImageCreatorContext>(
   ScenesEnum.IMAGE_SCENE
 );
-imageScene.enter((ctx) => ctx.reply("Please upload your image."));
+imageScene.enter(async (ctx) => {
+  const userId = ctx?.from?.id;
+
+  const passCallback = () => ctx.reply("Please upload your image.");
+
+  const failCallback = () =>
+    ctx.reply(
+      "You have exceeded the free usage limit. Please pay to continue using this functionality."
+    );
+
+  await checkUsageCount(userId as number, passCallback, failCallback);
+});
 imageScene.command(CommandEnum.BACK, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
 imageScene.command(CommandEnum.EXIT, (ctx) => {
+  ctx.scene.enter(ScenesEnum.START_SCENE);
+});
+imageScene.start((ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
 imageScene.on(message("photo"), async (ctx) => {
@@ -33,4 +48,6 @@ imageScene.on(message("photo"), async (ctx) => {
     );
   }
 });
-imageScene.on(message("text"), (ctx) => ctx.reply("Please upload an image only."));
+imageScene.on(message("text"), (ctx) =>
+  ctx.reply("Please upload an image only.")
+);

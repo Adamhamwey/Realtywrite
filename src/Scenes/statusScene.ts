@@ -2,6 +2,7 @@ import { Scenes, Markup } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ScenesEnum, StatusEnum } from "../const";
+import { checkUsageCount } from "../payWall";
 
 // Status scene
 export const statusScene = new Scenes.BaseScene<ImageCreatorContext>(
@@ -14,14 +15,27 @@ statusScene.command(CommandEnum.BACK, (ctx) => {
 statusScene.command(CommandEnum.EXIT, (ctx) => {
   ctx.scene.enter(ScenesEnum.START_SCENE);
 });
-statusScene.enter((ctx) => {
+statusScene.start((ctx) => {
+  ctx.scene.enter(ScenesEnum.START_SCENE);
+});
+statusScene.enter(async (ctx) => {
   // Define the menu options
   const menuOptions = Markup.inlineKeyboard([
     Markup.button.callback(StatusEnum.FOR_SALE, StatusEnum.FOR_SALE),
     Markup.button.callback(StatusEnum.FOR_RENT, StatusEnum.FOR_RENT),
     Markup.button.callback(StatusEnum.SOLD, StatusEnum.SOLD),
   ]);
-  ctx.reply("Choose status", menuOptions);
+
+  const userId = ctx?.from?.id;
+
+  const passCallback = () => ctx.reply("Choose status", menuOptions);
+
+  const failCallback = () =>
+    ctx.reply(
+      "You have exceeded the free usage limit. Please pay to continue using this functionality."
+    );
+
+  await checkUsageCount(userId as number, passCallback, failCallback);
 });
 statusScene.action(StatusEnum.FOR_SALE, async (ctx) => {
   ctx.session.status = StatusEnum.FOR_SALE;

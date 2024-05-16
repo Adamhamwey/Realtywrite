@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const BOT_TOKEN = process.env.BOT_TOKEN as string;
+export const MONGO_DB_URI = process.env.MONGO_DB_URI as string;
 
 export enum ScenesEnum {
   START_SCENE = "START_SCENE",
