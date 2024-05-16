@@ -1,3 +1,4 @@
+import { FREE_USAGE_LIMIT } from "./const";
 import { getUsageCount } from "./db";
 
 export async function checkUsageCount(
@@ -6,7 +7,7 @@ export async function checkUsageCount(
   failCallback: any
 ) {
   const usageCount = await getUsageCount(userId);
-  if (usageCount < 2) {
+  if (usageCount < FREE_USAGE_LIMIT) {
     passCallback();
   } else {
     failCallback();
