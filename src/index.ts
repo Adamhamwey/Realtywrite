@@ -12,8 +12,7 @@ import { statusScene } from "./Scenes/statusScene";
 import { BOT_TOKEN, ScenesEnum } from "./const";
 import { ImageCreatorContext } from "./Interfaces";
 import { generateImageScene } from "./Scenes/generateImageScene";
-import { getUsageCount } from "./db";
-import { checkUsageCount } from "./payWall";
+import { getCreditsAvailable, getUsageCount } from "./db";
 
 const bot = new Telegraf<ImageCreatorContext>(BOT_TOKEN);
 
@@ -37,18 +36,12 @@ bot.use(async (ctx, next) => {
   const userId = ctx?.from?.id;
 
   await getUsageCount(userId as number);
+  await getCreditsAvailable(userId as number);
   await next();
 });
 
 bot.start(async (ctx) => {
-  const passCallback = () => ctx.scene.enter(ScenesEnum.START_SCENE);
-
-  const failCallback = () =>
-    ctx.reply(
-      "You have exceeded the free usage limit. Please pay to continue using this functionality."
-    );
-  const userId = ctx?.from?.id;
-  await checkUsageCount(userId, passCallback, failCallback);
+  ctx.scene.enter(ScenesEnum.START_SCENE);
 });
 
 bot.launch();

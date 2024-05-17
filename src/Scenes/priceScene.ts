@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
-import { CommandEnum, ScenesEnum } from "../const";
+import { CommandEnum, ResponseEnum, ScenesEnum } from "../const";
 import { checkUsageCount } from "../payWall";
 
 // Price scene
@@ -22,10 +22,7 @@ priceScene.enter(async (ctx) => {
 
   const passCallback = () => ctx.reply("Please enter the price.");
 
-  const failCallback = () =>
-    ctx.reply(
-      "You have exceeded the free usage limit. Please pay to continue using this functionality."
-    );
+  const failCallback = () => ctx.reply(ResponseEnum.PAY_TO_USE);
 
   await checkUsageCount(userId as number, passCallback, failCallback);
 });

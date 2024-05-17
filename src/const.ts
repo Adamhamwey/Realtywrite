@@ -4,8 +4,10 @@ dotenv.config();
 
 export const BOT_TOKEN = process.env.BOT_TOKEN as string;
 export const MONGO_DB_URI = process.env.MONGO_DB_URI as string;
+export const STRIPE_TOKEN = process.env.STRIPE_TOKEN as string;
 
 export const FREE_USAGE_LIMIT = 2;
+export const CREDITS_PER_GENERATION = 2;
 
 export enum ScenesEnum {
   START_SCENE = "START_SCENE",
@@ -30,4 +32,8 @@ export enum StatusEnum {
   FOR_SALE = "For Sale",
   FOR_RENT = "For Rent",
   SOLD = "Sold",
+}
+
+export enum ResponseEnum {
+  PAY_TO_USE = "You have exceeded the free usage limit. Unfortunately, this functionality is not available at the moment. If you'd like to use it, please consider purchasing credits.",
 }

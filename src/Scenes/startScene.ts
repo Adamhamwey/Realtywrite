@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { ImageCreatorContext } from "../Interfaces";
-import { CommandEnum, ScenesEnum } from "../const";
+import { CommandEnum, ResponseEnum, ScenesEnum, STRIPE_TOKEN } from "../const";
 import { checkUsageCount } from "../payWall";
 
 // Start scene
@@ -16,10 +16,7 @@ startScene.enter(async (ctx) => {
       `Hello ${ctx?.message?.from.first_name}. To create real estate listing images, please use the /${CommandEnum.CREATE} command and follow the instructions.`
     );
 
-  const failCallback = () =>
-    ctx.reply(
-      "You have exceeded the free usage limit. Please pay to continue using this functionality."
-    );
+  const failCallback = () => ctx.reply(ResponseEnum.PAY_TO_USE);
 
   await checkUsageCount(userId as number, passCallback, failCallback);
 });

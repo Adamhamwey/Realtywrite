@@ -1,6 +1,6 @@
 import { Scenes } from "telegraf";
 import { ImageCreatorContext } from "../Interfaces";
-import { CommandEnum, ScenesEnum } from "../const";
+import { CommandEnum, ResponseEnum, ScenesEnum } from "../const";
 import { createReadStream, unlinkSync } from "fs";
 import { createImage, formatCurrency, formatDecimals } from "../utils";
 import { usersCollection } from "../db";
@@ -79,10 +79,7 @@ generateImageScene.enter(async (ctx) => {
     }
   };
 
-  const failCallback = () =>
-    ctx.reply(
-      "You have exceeded the free usage limit. Please pay to continue using this functionality."
-    );
+  const failCallback = () => ctx.reply(ResponseEnum.PAY_TO_USE);
 
   await checkUsageCount(userId as number, passCallback, failCallback);
 });
