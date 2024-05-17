@@ -3,19 +3,15 @@ import { Canvas, createCanvas, loadImage } from "canvas";
 import { writeFileSync } from "fs";
 import { PropertyDetails } from "../Interfaces";
 
-export async function createImage(
-  {
-    fileLink,
-    price,
-    status,
-    location,
-    noOfBedRooms,
-    noOfBathRooms,
-    area,
-  }: PropertyDetails,
-  outputPath1: string,
-  outputPath2: string
-) {
+export async function createImage({
+  fileLink,
+  price,
+  status,
+  location,
+  noOfBedRooms,
+  noOfBathRooms,
+  area,
+}: PropertyDetails) {
   // Download the image
   const response = await axios({
     url: fileLink,
@@ -57,8 +53,8 @@ export async function createImage(
   // Merge the canvas and the image
   const buffer1_1 = textAddedCanvas1_1.toBuffer("image/jpeg");
   const buffer16_9 = textAddedCanvas16_9.toBuffer("image/jpeg");
-  writeFileSync(outputPath1, buffer1_1);
-  writeFileSync(outputPath2, buffer16_9);
+
+  return { buffer1_1, buffer16_9 };
 }
 
 // Function to add text to canvas
