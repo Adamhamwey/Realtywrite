@@ -23,7 +23,10 @@ areaScene.enter(async (ctx) => {
   const passCallback = () =>
     ctx.reply("Please enter the area in square feet of your house.");
 
-  const failCallback = () => ctx.reply(ResponseEnum.PAY_TO_USE);
+  const failCallback = async () => {
+    await ctx.reply(ResponseEnum.PAY_TO_USE);
+    ctx.scene.enter(ScenesEnum.PAYMENT_SCENE);
+  };
 
   await checkUsageCount(userId as number, passCallback, failCallback);
 });
