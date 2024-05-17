@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Canvas, createCanvas, loadImage } from "canvas";
 import { writeFileSync } from "fs";
-import { PropertyDetails } from "./Interfaces";
+import { PropertyDetails } from "../Interfaces";
 
 export async function createImage(
   {
@@ -59,42 +59,6 @@ export async function createImage(
   const buffer16_9 = textAddedCanvas16_9.toBuffer("image/jpeg");
   writeFileSync(outputPath1, buffer1_1);
   writeFileSync(outputPath2, buffer16_9);
-}
-
-// Format currency function
-export function formatCurrency(
-  amount: number,
-  locale = "en-US",
-  currency = "USD",
-  minimumFractionDigits = 0,
-  maximumFractionDigits = 0
-): string {
-  const formatter = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency,
-    minimumFractionDigits,
-    maximumFractionDigits,
-  });
-
-  // Format the amount
-  return formatter.format(amount);
-}
-
-// Format units function
-export function formatDecimals(
-  amount: number,
-  locale = "en-US",
-  minimumFractionDigits = 0,
-  maximumFractionDigits = 0
-): string {
-  const formatter = new Intl.NumberFormat(locale, {
-    style: "decimal",
-    minimumFractionDigits,
-    maximumFractionDigits,
-  });
-
-  // Format the amount
-  return formatter.format(amount);
 }
 
 // Function to add text to canvas

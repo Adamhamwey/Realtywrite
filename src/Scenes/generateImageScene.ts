@@ -2,7 +2,8 @@ import { Scenes } from "telegraf";
 import { ImageCreatorContext } from "../Interfaces";
 import { CommandEnum, ResponseEnum, ScenesEnum } from "../const";
 import { createReadStream, unlinkSync } from "fs";
-import { createImage, formatCurrency, formatDecimals } from "../utils";
+import { formatCurrency, formatDecimals } from "../utils/formatingUtils";
+import { createImage } from "../utils/imageUtils";
 import { usersCollection } from "../db";
 import { checkUsageCount } from "../payWall";
 
