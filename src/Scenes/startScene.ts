@@ -16,7 +16,10 @@ startScene.enter(async (ctx) => {
       `Hello ${ctx?.message?.from.first_name}. To create real estate listing images, please use the /${CommandEnum.CREATE} command and follow the instructions.`
     );
 
-  const failCallback = () => ctx.reply(ResponseEnum.PAY_TO_USE);
+  const failCallback = async () => {
+    await ctx.reply(ResponseEnum.PAY_TO_USE);
+    ctx.scene.enter(ScenesEnum.PAYMENT_SCENE);
+  };
 
   await checkUsageCount(userId as number, passCallback, failCallback);
 });

@@ -13,7 +13,10 @@ imageScene.enter(async (ctx) => {
 
   const passCallback = () => ctx.reply("Please upload your image.");
 
-  const failCallback = () => ctx.reply(ResponseEnum.PAY_TO_USE);
+  const failCallback = async () => {
+    await ctx.reply(ResponseEnum.PAY_TO_USE);
+    ctx.scene.enter(ScenesEnum.PAYMENT_SCENE);
+  };
 
   await checkUsageCount(userId as number, passCallback, failCallback);
 });

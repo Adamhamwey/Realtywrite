@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Canvas, createCanvas, loadImage } from "canvas";
-import { writeFileSync } from "fs";
 import { PropertyDetails } from "../Interfaces";
 
 export async function createImage({
