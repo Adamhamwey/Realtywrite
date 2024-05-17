@@ -45,7 +45,8 @@ generateImageScene.enter(async (ctx) => {
       const formattedPrice = formatCurrency(Number(price));
       const formattedAera = formatDecimals(Number(area));
 
-      const outputPath = "./output.jpg";
+      const outputPath1 = "./output1.jpg";
+      const outputPath2 = "./output2.jpg";
       await createImage(
         {
           fileLink,
@@ -56,7 +57,8 @@ generateImageScene.enter(async (ctx) => {
           noOfBathRooms,
           area: formattedAera,
         },
-        outputPath
+        outputPath1,
+        outputPath2
       );
 
       const userId = ctx?.from?.id;
@@ -65,10 +67,14 @@ generateImageScene.enter(async (ctx) => {
       await usersCollection.updateOne({ userId }, { $inc: { usageCount: 1 } });
 
       // Send the image back to the user
-      await ctx.replyWithPhoto({ source: createReadStream(outputPath) });
+      await Promise.allSettled([
+        ctx.replyWithPhoto({ source: createReadStream(outputPath1) }),
+        ctx.replyWithPhoto({ source: createReadStream(outputPath2) }),
+      ]);
 
       // Clean up the saved image file
-      unlinkSync(outputPath);
+      unlinkSync(outputPath1);
+      unlinkSync(outputPath2);
 
       await ctx.reply(`Use /${CommandEnum.CREATE} to create another image.`);
     } catch (error) {
