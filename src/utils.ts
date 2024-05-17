@@ -63,15 +63,16 @@ export async function createImage(
   ctxCanvas.textAlign = "left";
   ctxCanvas.fillStyle = "#FFFFFF";
 
-  ctxCanvas.font = `bold ${(70 / 1000) * Math.min(width, height)}px Arial`;
-
+  ctxCanvas.fillStyle = "#00B22D";
+  ctxCanvas.font = `800 ${(70 / 1000) * Math.min(width, height)}px Arial`;
   ctxCanvas.fillText(status.toUpperCase(), mainStartX, height * 0.555);
 
+  ctxCanvas.fillStyle = "#FFFFFF";
   ctxCanvas.font = `bold ${(85 / 1000) * Math.min(width, height)}px Arial`;
-  ctxCanvas.fillText(price, mainStartX, height * 0.72);
+  ctxCanvas.fillText(price, mainStartX, height * 0.7);
 
   ctxCanvas.font = `bold ${(85 / 1000) * Math.min(width, height)}px Arial`;
-  ctxCanvas.fillText(location, mainStartX, height * 0.81);
+  ctxCanvas.fillText(location, mainStartX, height * 0.8);
 
   ctxCanvas.font = `bold ${(30 / 1000) * Math.min(width, height)}px Arial`;
   ctxCanvas.fillText(
