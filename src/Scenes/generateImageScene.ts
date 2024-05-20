@@ -1,6 +1,11 @@
 import { Scenes } from "telegraf";
 import { ImageCreatorContext } from "../Interfaces";
-import { CommandEnum, ResponseEnum, ScenesEnum } from "../const";
+import {
+  CommandEnum,
+  CREDITS_PER_GENERATION,
+  ResponseEnum,
+  ScenesEnum,
+} from "../const";
 import { createReadStream, unlinkSync } from "fs";
 import { formatCurrency, formatDecimals } from "../utils/formatingUtils";
 import { createImage } from "../utils/imageUtils";
@@ -60,6 +65,12 @@ generateImageScene.enter(async (ctx) => {
 
       // Increment usage count
       await usersCollection.updateOne({ userId }, { $inc: { usageCount: 1 } });
+
+      // Decrement credits available
+      await usersCollection.updateOne(
+        { userId },
+        { $inc: { creditsAvailable: -1 * CREDITS_PER_GENERATION } }
+      );
 
       // Send the image back to the user
       await Promise.allSettled([
